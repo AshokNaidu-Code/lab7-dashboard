@@ -1,0 +1,29 @@
+# Root-level ignores
+.env
+.env.*          # Any environment files
+__pycache__/
+.vscode/
+*.log
+.DS_Store
+*.swp
+
+# Astro build output (if customized)
+public/build/
+
+# Python (backend)
+venv/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+build/
+*.sqlite3
+
+# Docker artifacts (if used later)
+*.pid
+*.tar
+*.lock
+docker-compose.override.yml
+
+# Optional: OS-specific
+Thumbs.db
