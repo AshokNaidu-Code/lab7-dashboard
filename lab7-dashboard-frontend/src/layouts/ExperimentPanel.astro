@@ -1,0 +1,8 @@
+---
+const { title, children } = Astro.props;
+---
+
+<div class="transition-all duration-300 ease-in-out hover:shadow-pulse hover:scale-[1.02]">
+  <h2 class="text-lab-accent font-bold text-lg mb-2">{title}</h2>
+  <div class="text-lab-accent">{children}</div>
+</div>

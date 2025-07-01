@@ -1,0 +1,23 @@
+---
+import LabLayout from "../layouts/LabLayout.astro";
+import ExperimentPanel from "../components/ExperimentPanel.astro";
+import "../styles/global.css";
+---
+
+<LabLayout title="Lab 7 — Experiment Table">
+  <h1 class="text-3xl font-bold mb-4">🧪 Experiment Table</h1>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    <ExperimentPanel title="Trigger CI/CD">
+      <button class="bg-green-800 hover:bg-green-600 py-1 px-3 rounded">Build Now</button>
+    </ExperimentPanel>
+
+    <ExperimentPanel title="Live Logs">
+      <pre class="text-xs">Waiting for build...</pre>
+    </ExperimentPanel>
+
+    <ExperimentPanel title="System Metrics">
+      <p>CPU: 17% | Mem: 62%</p>
+    </ExperimentPanel>
+  </div>
+</LabLayout>
