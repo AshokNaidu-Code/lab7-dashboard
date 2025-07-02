@@ -4,24 +4,27 @@ from pathlib import Path
 
 log_file = Path("build_log.json")
 
-def add_build_entry(status: str, message: str):
-    entry = {
-        "timestamp": datetime.now().strftime("%H:%M:%S"),
-        "status": status,
-        "message": message
-    }
+def add_build_entry(status, message):
+    timestamp = datetime.now().strftime("%H:%M:%S")
+    entry = {"timestamp": timestamp, "status": status, "message": message}
 
-    logs = get_build_history()
+    if log_file.exists():
+        with log_file.open("r", encoding="utf-8") as f:
+            logs = json.load(f)
+    else:
+        logs = []
+
     logs.append(entry)
-    logs = logs[-10:]  # Keep only the latest 10
-    log_file.write_text(json.dumps(logs, indent=2))
+
+    with log_file.open("w", encoding="utf-8") as f:
+        json.dump(logs, f, indent=2)
 
 def get_build_history():
     if log_file.exists():
-        return json.loads(log_file.read_text())
+        with log_file.open("r", encoding="utf-8") as f:
+            return json.load(f)
     return []
 
 def clear_history():
     if log_file.exists():
         log_file.write_text("[]")
-    
