@@ -8,16 +8,126 @@ import "../styles/global.css";
   <h1 class="text-3xl font-bold mb-4">🧪 Experiment Table</h1>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+
+    <!-- 🚀 CI/CD Trigger Panel -->
     <ExperimentPanel title="Trigger CI/CD">
-      <button class="bg-green-800 hover:bg-green-600 py-1 px-3 rounded">Build Now</button>
+      <div class="flex items-center space-x-2">
+        <div
+          id="statusLED"
+          class="w-3 h-3 rounded-full bg-gray-700 inline-block shadow-md transition-shadow"
+        ></div>
+
+        <button
+          id="buildBtn"
+          class="bg-lab-dim border border-lab-glow px-4 py-2 rounded shadow-glow hover:bg-lab-glow hover:text-black transition"
+        >
+          Build Now
+        </button>
+      </div>
     </ExperimentPanel>
 
+    <!-- 📄 Live Logs Panel -->
     <ExperimentPanel title="Live Logs">
-      <pre class="text-xs">Waiting for build...</pre>
+      <ul
+        id="buildLog"
+        class="text-xs space-y-1 text-lab-accent bg-lab-panel p-2 rounded-lg max-h-48 overflow-y-auto"
+      >
+        Loading...
+      </ul>
     </ExperimentPanel>
 
+    <!-- 📊 System Metrics -->
     <ExperimentPanel title="System Metrics">
       <p>CPU: 17% | Mem: 62%</p>
     </ExperimentPanel>
+
   </div>
 </LabLayout>
+
+<!-- ⚙️ Scripts -->
+<script is:inline type="module">
+  async function triggerBuild() {
+    const button = document.getElementById("buildBtn");
+    const statusLED = document.getElementById("statusLED");
+    
+    console.log("📡 Fetching build history...");
+    console.log("🔨 triggerBuild() fired!");
+
+    button.textContent = "Building...";
+    button.disabled = true;
+    statusLED.className = "w-3 h-3 rounded-full bg-yellow-300 shadow-pulse";
+
+    try {
+      const res = await fetch("http://localhost:8000/trigger/", {
+        method: "POST"
+      });
+
+      const data = await res.json();
+      const isSuccess = res.status === 204;
+
+      statusLED.className = `w-3 h-3 rounded-full shadow-glow ${
+        isSuccess ? "bg-green-400" : "bg-red-400"
+      }`;
+
+      button.textContent = data.message || "Build triggered!";
+    } catch (err) {
+      console.error("❌ Build trigger failed:", err);
+      button.textContent = "Error!";
+      statusLED.className = "w-3 h-3 rounded-full bg-red-500 shadow-pulse";
+    } finally {
+      setTimeout(() => {
+        button.textContent = "Build Now";
+        button.disabled = false;
+        statusLED.className = "w-3 h-3 rounded-full bg-gray-700 shadow-md";
+      }, 3000);
+
+      await loadBuildHistory();
+    }
+  }
+
+  async function loadBuildHistory() {
+    console.log("📡 Fetching build history...");
+    console.log("📄 Logs from backend:", logs);
+    const res = await fetch("http://localhost:8000/trigger/history");
+    const logs = await res.json();
+
+    const list = document.getElementById("buildLog");
+    list.innerHTML = "";
+
+    if (logs.length === 0) {
+      const li = document.createElement("li");
+      li.textContent = "No build history yet.";
+      li.className = "text-gray-500 text-sm";
+      list.appendChild(li);
+      return;
+    }
+
+    for (const log of logs.reverse()) {
+      const li = document.createElement("li");
+
+      const icon = log.status === "success" ? "✅" : "❌";
+      const msgColor =
+        log.status === "success" ? "text-green-400" : "text-red-400";
+      const glow = log.status === "success" ? "shadow-glow" : "shadow-pulse";
+
+      li.innerHTML = `
+        <span class="font-mono text-xs text-gray-500">[${log.timestamp}]</span>
+        <span class="${msgColor} font-semibold ${glow} animate-flicker ml-2">${icon} ${log.message}</span>
+      `;
+
+      li.className = "transition-opacity opacity-0 animate-fadeIn py-1";
+      list.appendChild(li);
+    }
+  }
+
+  // 🔁 Attach event handler after DOM is ready
+  document.addEventListener("DOMContentLoaded", () => {
+    const button = document.getElementById("buildBtn");
+    if (button) {
+      button.addEventListener("click", triggerBuild);
+    }
+
+    // Load logs on page load
+    loadBuildHistory();
+  });
+</script>
