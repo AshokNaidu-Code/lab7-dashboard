@@ -20,3 +20,8 @@ def get_build_history():
     if log_file.exists():
         return json.loads(log_file.read_text())
     return []
+
+def clear_history():
+    if log_file.exists():
+        log_file.write_text("[]")
+    

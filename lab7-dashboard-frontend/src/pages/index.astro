@@ -8,14 +8,14 @@ import "../styles/global.css";
   <h1 class="text-3xl font-bold mb-4">🧪 Experiment Table</h1>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-
     <!-- 🚀 CI/CD Trigger Panel -->
     <ExperimentPanel title="Trigger CI/CD">
       <div class="flex items-center space-x-2">
         <div
           id="statusLED"
           class="w-3 h-3 rounded-full bg-gray-700 inline-block shadow-md transition-shadow"
-        ></div>
+        >
+        </div>
 
         <button
           id="buildBtn"
@@ -30,28 +30,29 @@ import "../styles/global.css";
     <ExperimentPanel title="Live Logs">
       <ul
         id="buildLog"
-        class="text-xs space-y-1 text-lab-accent bg-lab-panel p-2 rounded-lg max-h-48 overflow-y-auto"
+        class="text-sm font-mono space-y-1 mt-4"
       >
         Loading...
       </ul>
+      <button
+        id="clearHistoryBtn"
+        class="mt-2 px-3 py-1 text-xs bg-lab-dim border border-red-500 text-red-400 rounded hover:bg-red-500 hover:text-black transition"
+      >
+        Clear History
+      </button>
     </ExperimentPanel>
 
     <!-- 📊 System Metrics -->
     <ExperimentPanel title="System Metrics">
       <p>CPU: 17% | Mem: 62%</p>
     </ExperimentPanel>
-
   </div>
 </LabLayout>
 
-<!-- ⚙️ Scripts -->
 <script is:inline type="module">
   async function triggerBuild() {
     const button = document.getElementById("buildBtn");
     const statusLED = document.getElementById("statusLED");
-    
-    console.log("📡 Fetching build history...");
-    console.log("🔨 triggerBuild() fired!");
 
     button.textContent = "Building...";
     button.disabled = true;
@@ -65,8 +66,8 @@ import "../styles/global.css";
       const data = await res.json();
       const isSuccess = res.status === 204;
 
-      statusLED.className = `w-3 h-3 rounded-full shadow-glow ${
-        isSuccess ? "bg-green-400" : "bg-red-400"
+      statusLED.className = `w-3 h-3 rounded-full ${
+        isSuccess ? "bg-green-400 shadow-glow" : "bg-red-400 shadow-pulse"
       }`;
 
       button.textContent = data.message || "Build triggered!";
@@ -86,48 +87,68 @@ import "../styles/global.css";
   }
 
   async function loadBuildHistory() {
-    console.log("📡 Fetching build history...");
-    console.log("📄 Logs from backend:", logs);
-    const res = await fetch("http://localhost:8000/trigger/history");
-    const logs = await res.json();
-
     const list = document.getElementById("buildLog");
     list.innerHTML = "";
 
-    if (logs.length === 0) {
+    try {
+      const res = await fetch("http://localhost:8000/trigger/history");
+      const logs = await res.json();
+
+      if (logs.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = "No build history yet.";
+        li.className = "text-gray-500 text-sm";
+        list.appendChild(li);
+        return;
+      }
+
+      for (const log of logs.reverse()) {
+        const li = document.createElement("li");
+
+        const icon = log.status === "success" ? "✅" : "❌";
+        const msgColor = log.status === "success" ? "text-green-400" : "text-red-400";
+        const glow = log.status === "success" ? "shadow-glow" : "shadow-pulse";
+
+        li.innerHTML = `
+          <span class="font-mono text-xs text-gray-500">[${log.timestamp}]</span>
+          <span class="${msgColor} font-semibold ${glow} animate-flicker ml-2">${icon} ${log.message}</span>
+        `;
+
+        li.className = "text-gray-200 text-sm";
+        list.appendChild(li);
+      }
+    } catch (err) {
       const li = document.createElement("li");
-      li.textContent = "No build history yet.";
-      li.className = "text-gray-500 text-sm";
+      li.textContent = "Error loading logs.";
+      li.className = "text-red-400 text-sm";
       list.appendChild(li);
-      return;
-    }
-
-    for (const log of logs.reverse()) {
-      const li = document.createElement("li");
-
-      const icon = log.status === "success" ? "✅" : "❌";
-      const msgColor =
-        log.status === "success" ? "text-green-400" : "text-red-400";
-      const glow = log.status === "success" ? "shadow-glow" : "shadow-pulse";
-
-      li.innerHTML = `
-        <span class="font-mono text-xs text-gray-500">[${log.timestamp}]</span>
-        <span class="${msgColor} font-semibold ${glow} animate-flicker ml-2">${icon} ${log.message}</span>
-      `;
-
-      li.className = "transition-opacity opacity-0 animate-fadeIn py-1";
-      list.appendChild(li);
+      console.error("🔴 Failed to fetch build history:", err);
     }
   }
 
-  // 🔁 Attach event handler after DOM is ready
+  async function clearBuildHistory() {
+    try {
+      await fetch("http://localhost:8000/trigger/history/clear", {
+        method: "POST"
+      });
+      await loadBuildHistory();
+    } catch (err) {
+      console.error("⚠️ Error clearing history:", err);
+    }
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
-    const button = document.getElementById("buildBtn");
-    if (button) {
-      button.addEventListener("click", triggerBuild);
+    const buildBtn = document.getElementById("buildBtn");
+    const clearBtn = document.getElementById("clearHistoryBtn");
+
+    if (buildBtn) {
+      buildBtn.addEventListener("click", triggerBuild);
     }
 
-    // Load logs on page load
+    if (clearBtn) {
+      clearBtn.addEventListener("click", clearBuildHistory);
+    }
+
     loadBuildHistory();
   });
 </script>

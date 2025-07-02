@@ -1,55 +1,48 @@
 import os
-import httpx
-from dotenv import load_dotenv
-from .build_log import add_build_entry
 import requests
+from dotenv import load_dotenv
+from utils.build_log import add_build_entry
 
 load_dotenv()
+
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+REPO_OWNER = "your-github-username"
+REPO_NAME = "lab7-dashboard"
+WORKFLOW_FILE = "build.yml"  # matches .github/workflows/build.yml
+BRANCH = "main"  # or "master", depending on your repo
 
+def trigger_github_action():
+    url = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/actions/workflows/{WORKFLOW_FILE}/dispatches"
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github+json"
+    }
+    payload = {
+        "ref": BRANCH
+    }
 
-async def trigger_github_action():
     try:
-        response = requests.post(
-            "https://api.github.com/repos/AshokNaidu-Code/lab7-dashboard/actions/workflows/build.yml/dispatches",
-            headers={
-                "Authorization": f"Bearer {GITHUB_TOKEN}",
-                "Accept": "application/vnd.github+json"
-            },
-            json={"ref": "master"}
-        )
+        response = requests.post(url, headers=headers, json=payload)
 
         if response.status_code == 204:
-            msg = "Build triggered!"
             status = "success"
+            msg = "Build triggered!"
         else:
-            msg = response.text
             status = "failed"
+            msg = f"GitHub error {response.status_code}: {response.text}"
 
     except Exception as e:
-        msg = f"Request failed: {str(e)}"
         status = "failed"
-        response = None  # <- ensures the variable exists
+        msg = f"Request exception: {str(e)}"
+        response = None
 
-    add_build_entry(status, msg)
+    print(f"🛰️ GitHub Trigger Status: {status} → {msg}")
+    try:
+        add_build_entry(status, msg)
+    except Exception as log_err:
+        print("⚠️ Failed to log build:", log_err)
 
     return {
         "status": response.status_code if response else 500,
         "message": msg
     }
-
-
-    headers = {
-        "Authorization": f"Bearer {GITHUB_TOKEN}",
-        "Accept": "application/vnd.github+json"
-    }
-
-    url = f"https://api.github.com/repos/{GITHUB_REPO}/dispatches"
-    payload = { "event_type": "lab7-manual-trigger" }
-
-    async with httpx.AsyncClient() as client:
-        response = await client.post(url, headers=headers, json=payload)
-        return {
-            "status": response.status_code,
-            "message": "Build triggered" if response.status_code == 204 else response.text
-        }
