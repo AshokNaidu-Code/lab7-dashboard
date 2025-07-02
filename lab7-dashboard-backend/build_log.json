@@ -1,20 +1,5 @@
 [
   {
-    "timestamp": "15:33:19",
-    "status": "failed",
-    "message": "Request failed: name 'requests' is not defined"
-  },
-  {
-    "timestamp": "15:33:29",
-    "status": "failed",
-    "message": "Request failed: name 'requests' is not defined"
-  },
-  {
-    "timestamp": "16:12:17",
-    "status": "failed",
-    "message": "Request failed: name 'GITHUB_TOKEN' is not defined"
-  },
-  {
     "timestamp": "16:12:56",
     "status": "failed",
     "message": "Request failed: name 'GITHUB_TOKEN' is not defined"
@@ -48,5 +33,20 @@
     "timestamp": "16:27:07",
     "status": "failed",
     "message": "{\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"404\"}"
+  },
+  {
+    "timestamp": "16:32:05",
+    "status": "failed",
+    "message": "{\"message\":\"No ref found for: main\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}"
+  },
+  {
+    "timestamp": "16:32:18",
+    "status": "failed",
+    "message": "{\"message\":\"No ref found for: main\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}"
+  },
+  {
+    "timestamp": "16:32:32",
+    "status": "failed",
+    "message": "{\"message\":\"No ref found for: main\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflows#create-a-workflow-dispatch-event\",\"status\":\"422\"}"
   }
 ]

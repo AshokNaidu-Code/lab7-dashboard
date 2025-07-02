@@ -16,7 +16,7 @@ async def trigger_github_action():
                 "Authorization": f"Bearer {GITHUB_TOKEN}",
                 "Accept": "application/vnd.github+json"
             },
-            json={"ref": "main"}
+            json={"ref": "master"}
         )
 
         if response.status_code == 204:
