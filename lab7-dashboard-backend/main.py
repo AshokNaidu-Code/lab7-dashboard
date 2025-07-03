@@ -1,8 +1,16 @@
 from fastapi import FastAPI
 from api.trigger import router as trigger_router
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 app = FastAPI()
+
+if not os.getenv("IN_DOCKER"):
+    from api.docker_utils import list_running_containers, stop_containers_by_image
+
+from api.trigger import router as trigger_router
+app.include_router(trigger_router)
+
 
 # CORS middleware
 app.add_middleware(
@@ -13,4 +21,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(trigger_router, prefix="/trigger")
+app.include_router(trigger_router)
+
+@app.get("/")
+def root():
+    return {"message": "🚀 Lab7 Dashboard container is alive"}
+
+import shutil
+print("🧪 Docker path from Python:", shutil.which("docker"))
