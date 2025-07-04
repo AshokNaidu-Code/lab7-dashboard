@@ -5,12 +5,14 @@
 <pre id="response-box">⏳ Contacting /list...</pre>
 
 <script>
-  fetch("/list")
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+
+  fetch(`${backendUrl}/list`)
     .then(res => res.json())
     .then(data => {
       document.getElementById("response-box").textContent = JSON.stringify(data, null, 2);
     })
     .catch(err => {
-      document.getElementById("response-box").textContent = "⚠️ Error contacting backend: " + err.message;
+      document.getElementById("response-box").textContent = "❌ " + err.message;
     });
 </script>
