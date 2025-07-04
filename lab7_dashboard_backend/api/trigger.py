@@ -10,6 +10,13 @@ import shutil
 
 router = APIRouter()
 
+IN_RAILWAY = os.getenv("RAILWAY_DEPLOYMENT_ID") is not None
+
+if not IN_RAILWAY:
+    from lab7_dashboard_backend.api.docker_utils import list_running_containers, stop_containers_by_image
+else:
+    print("⚠️ Skipping Docker imports: running inside Railway")
+
 class StopRequest(BaseModel):
     image: str
 

@@ -12,15 +12,6 @@ if not DOCKER_CLI or not os.path.exists(DOCKER_CLI):
 import shutil
 import os
 
-def ensure_docker():
-    docker_path = shutil.which("docker")
-    if not docker_path or not os.path.exists(docker_path):
-        raise FileNotFoundError("🚫 Docker CLI not found in PATH.")
-
-def list_containers():
-    ensure_docker()
-    # Run the docker command here
-
 def run_docker(args):
     full_cmd = [DOCKER_CLI] + args
     print("🐳 Running:", full_cmd)
@@ -33,6 +24,33 @@ def run_docker(args):
         print("🔥 Unexpected error in run_docker:", e)
         return subprocess.CompletedProcess(full_cmd, 1, "", str(e))
 
+def ensure_docker_exists():
+    docker_path = shutil.which("docker")
+    if not docker_path or not os.path.exists(docker_path):
+        raise FileNotFoundError("🚫 Docker CLI not found in PATH.")
+
+
+
+def list_running_containers():
+    """List all active Docker containers."""
+    try:
+        result = run_docker(["ps", "--format", "{{.ID}}:::{{.Image}}:::{{.Status}}"])
+        lines = result.stdout.strip().split("\n")
+        containers = []
+
+        for line in lines:
+            parts = line.split(":::")
+            if len(parts) == 3:
+                containers.append({
+                    "id": parts[0],
+                    "image": parts[1],
+                    "status": parts[2]
+                })
+
+        return {"containers": containers}
+    except Exception as e:
+        return {"error": str(e), "containers": []}
+    
 def stop_containers_by_image(image: str):
     """Stop all running containers built from a specific image."""
     image = image.strip()
@@ -66,23 +84,3 @@ def stop_containers_by_image(image: str):
     status = "success" if all_success else "error"
     add_build_entry(status, final_msg)
     return {"status": status, "message": final_msg}
-
-def list_running_containers():
-    """List all active Docker containers."""
-    try:
-        result = run_docker(["ps", "--format", "{{.ID}}:::{{.Image}}:::{{.Status}}"])
-        lines = result.stdout.strip().split("\n")
-        containers = []
-
-        for line in lines:
-            parts = line.split(":::")
-            if len(parts) == 3:
-                containers.append({
-                    "id": parts[0],
-                    "image": parts[1],
-                    "status": parts[2]
-                })
-
-        return {"containers": containers}
-    except Exception as e:
-        return {"error": str(e), "containers": []}
