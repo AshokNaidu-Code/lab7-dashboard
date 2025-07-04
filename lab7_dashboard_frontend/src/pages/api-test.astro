@@ -6,15 +6,15 @@
 <pre id="response-box">⏳ Contacting /list...</pre>
 
 <script>
-  const backendUrl =
-    import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
-  console.log("Backend URL:", backendUrl);
-  fetch(`${backendUrl}/list`)
-    .then((res) => res.json())
-    .then((data) => {
-      // handle response
-    })
-    .catch((err) => {
-      console.error("Fetch failed:", err);
-    });
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+   console.log("URL:", backendUrl);
+fetch(`${backendUrl}/list`)
+  .then(res => res.json())
+  .then(data => {
+    console.log("✅ Response:", data);
+    document.getElementById("response-box").textContent = JSON.stringify(data, null, 2);
+  })
+  .catch(err => {
+    document.getElementById("response-box").textContent = "❌ Fetch failed: " + err.message;
+  });
 </script>
