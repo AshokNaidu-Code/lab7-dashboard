@@ -23,7 +23,8 @@ def home():
 
 @app.get("/list")
 def get_list():
-    return {"containers": []}
+    return list_docker_containers()
+
 
 # ✅ Logs all loaded routes (visible in Railway logs)
 for route in app.routes:

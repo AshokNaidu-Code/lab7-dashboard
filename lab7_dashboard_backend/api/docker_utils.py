@@ -6,9 +6,6 @@ from lab7_dashboard_backend.utils.build_log import add_build_entry
 # Resolve Docker CLI path
 DOCKER_CLI = shutil.which("docker")
 
-if not DOCKER_CLI or not os.path.exists(DOCKER_CLI):
-    raise FileNotFoundError("🚫 Docker CLI not found in PATH. Is Docker Desktop installed and running?")
-
 import shutil
 import os
 
@@ -30,9 +27,11 @@ def ensure_docker_exists():
         raise FileNotFoundError("🚫 Docker CLI not found in PATH.")
 
 
-
 def list_running_containers():
-    """List all active Docker containers."""
+    """List all active Docker containers (if CLI available)."""
+    if not shutil.which("docker"):
+        return {"warning": "🚫 Docker CLI not available in this environment."}
+    
     try:
         result = run_docker(["ps", "--format", "{{.ID}}:::{{.Image}}:::{{.Status}}"])
         lines = result.stdout.strip().split("\n")
@@ -50,6 +49,7 @@ def list_running_containers():
         return {"containers": containers}
     except Exception as e:
         return {"error": str(e), "containers": []}
+
     
 def stop_containers_by_image(image: str):
     """Stop all running containers built from a specific image."""
