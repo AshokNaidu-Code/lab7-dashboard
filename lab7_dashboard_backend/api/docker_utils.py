@@ -9,6 +9,18 @@ DOCKER_CLI = shutil.which("docker")
 if not DOCKER_CLI or not os.path.exists(DOCKER_CLI):
     raise FileNotFoundError("🚫 Docker CLI not found in PATH. Is Docker Desktop installed and running?")
 
+import shutil
+import os
+
+def ensure_docker():
+    docker_path = shutil.which("docker")
+    if not docker_path or not os.path.exists(docker_path):
+        raise FileNotFoundError("🚫 Docker CLI not found in PATH.")
+
+def list_containers():
+    ensure_docker()
+    # Run the docker command here
+
 def run_docker(args):
     full_cmd = [DOCKER_CLI] + args
     print("🐳 Running:", full_cmd)
