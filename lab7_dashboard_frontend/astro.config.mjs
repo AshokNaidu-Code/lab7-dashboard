@@ -8,7 +8,7 @@ import path from "path";
 
 export default defineConfig({
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
     resolve: {
       alias: {
         "@": path.resolve("./src")
