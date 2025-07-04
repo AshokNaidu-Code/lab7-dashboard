@@ -50,7 +50,7 @@ if (!backendUrl) {
     </style>
   </head>
 
-  <body>
+  <body data-backend-url="{backendUrl}">
     <div class="card">
       <h1>🔗 Backend Connectivity Check</h1>
       <p id="status" class="loading">⏳ Contacting <code>/list</code> at <strong>{backendUrl}</strong>...</p>
@@ -59,7 +59,7 @@ if (!backendUrl) {
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        const backendUrl = "{backendUrl}";
+        const backendUrl = document.body.dataset.backendUrl;
         console.log("🚀 Using backend URL:", backendUrl);
 
         const statusEl = document.getElementById("status");
