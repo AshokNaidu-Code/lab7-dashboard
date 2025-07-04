@@ -11,3 +11,7 @@ if not IN_RAILWAY:
     app.include_router(trigger_router)
 else:
     print("⚠️ Skipping Docker-based routes (Railway environment)")
+
+@app.get("/")
+def home():
+    return {"message": "✅ Backend is live and running!"}
