@@ -1,13 +1,11 @@
 ---
-
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
+console.log("Backend URL in .astro:", backendUrl); // forces Vite to embed it
 ---
-
 <h1>🔗 Backend Connectivity Check</h1>
 <pre id="response-box">⏳ Contacting /list...</pre>
 
 <script>
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  console.log("🚀 Using backend URL:", import.meta.env.VITE_BACKEND_URL)
 fetch(`${backendUrl}/list`)
   .then(res => res.json())
   .then(data => {
