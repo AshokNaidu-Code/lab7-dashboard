@@ -1,7 +1,7 @@
 import os
 import requests
 from dotenv import load_dotenv
-from utils.build_log import add_build_entry
+from lab7_dashboard_backend.utils.build_log import add_build_entry
 
 load_dotenv()
 
