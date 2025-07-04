@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Request
 from pydantic import BaseModel
-from utils.build_log import get_build_history, clear_history, add_build_entry
-from utils.github_trigger import trigger_github_action
-from api.docker_utils import list_running_containers, stop_containers_by_image
+from lab7_dashboard_backend.utils.build_log import get_build_history, clear_history, add_build_entry
+from lab7_dashboard_backend.utils.github_trigger import trigger_github_action
+from lab7_dashboard_backend.api.docker_utils import list_running_containers, stop_containers_by_image
 import subprocess
 import os
 from datetime import datetime
