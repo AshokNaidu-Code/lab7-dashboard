@@ -60,7 +60,7 @@ import "../styles/global.css";
     statusLED.className = "w-3 h-3 rounded-full bg-yellow-300 shadow-pulse";
 
     try {
-      const res = await fetch("http://localhost:8000/trigger/", { method: "POST" });
+      const res = await fetch("https://lab7-dashboard-production.up.railway.app/trigger/", { method: "POST" });
       const data = await res.json();
       const isSuccess = res.status === 204;
       statusLED.className = `w-3 h-3 rounded-full ${isSuccess ? "bg-green-400 shadow-glow" : "bg-red-400 shadow-pulse"}`;
@@ -84,7 +84,7 @@ import "../styles/global.css";
     list.innerHTML = "";
 
     try {
-      const res = await fetch("http://localhost:8000/trigger/history");
+      const res = await fetch("https://lab7-dashboard-production.up.railway.app/trigger/history");
       const logs = await res.json();
 
       if (logs.length === 0) {
@@ -111,12 +111,12 @@ import "../styles/global.css";
   }
 
   async function clearBuildHistory() {
-    await fetch("http://localhost:8000/trigger/history/clear", { method: "POST" });
+    await fetch("https://lab7-dashboard-production.up.railway.app/trigger/history/clear", { method: "POST" });
     await loadBuildHistory();
   }
 
   async function loadRunningContainers() {
-    const res = await fetch("http://localhost:8000/trigger/docker/list/");
+    const res = await fetch("https://lab7-dashboard-production.up.railway.app/trigger/docker/list/");
     const data = await res.json();
     const select = document.getElementById("containerSelect");
     if (!select || !data.containers) return;
@@ -138,7 +138,7 @@ import "../styles/global.css";
       btn.textContent = "Building...";
       btn.disabled = true;
 
-      const res = await fetch("http://localhost:8000/trigger/docker/", { method: "POST" });
+      const res = await fetch("https://lab7-dashboard-production.up.railway.app/trigger/docker/", { method: "POST" });
       const data = await res.json();
 
       btn.textContent = "Trigger Docker Build 🐳";
@@ -155,7 +155,7 @@ import "../styles/global.css";
       btn.textContent = "Starting...";
       btn.disabled = true;
 
-      await fetch("http://localhost:8000/trigger/docker/run/", {
+      await fetch("https://lab7-dashboard-production.up.railway.app/trigger/docker/run/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ image }),
@@ -175,7 +175,7 @@ import "../styles/global.css";
       btn.textContent = "Stopping...";
       btn.disabled = true;
 
-      await fetch("http://localhost:8000/trigger/docker/stop/", {
+      await fetch("https://lab7-dashboard-production.up.railway.app/trigger/docker/stop/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ image }),
