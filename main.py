@@ -2,7 +2,7 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), 'lab7_dashboard_backend'))
 from fastapi import FastAPI
-from lab7_dashboard_backend.api.trigger import router as trigger_router
+from api.trigger import router as trigger_router
 from fastapi.middleware.cors import CORSMiddleware
 
 print("🔍 PYTHONPATH:", sys.path)
