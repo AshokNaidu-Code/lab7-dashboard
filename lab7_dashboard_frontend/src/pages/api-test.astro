@@ -47,9 +47,9 @@ if (!backendUrl) {
     </div>
 
     <script>
-      const backendUrl = "{backendUrl}";
+      const backendUrl = "␣{backendUrl}"
       console.log("🚀 Using backend URL:", backendUrl);
-
+      
       fetch(`${backendUrl}/list`)
         .then(async (res) => {
           const contentType = res.headers.get("content-type");
