@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from lab7_dashboard_backend.api.trigger import router as trigger_router
+from api.trigger import router as trigger_router
 from fastapi.middleware.cors import CORSMiddleware
 import sys
 import os
