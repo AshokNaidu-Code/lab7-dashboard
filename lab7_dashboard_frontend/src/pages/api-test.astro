@@ -6,7 +6,7 @@
 <pre id="response-box">⏳ Contacting /list...</pre>
 
 <script>
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   console.log("🚀 Using backend URL:", import.meta.env.VITE_BACKEND_URL)
 fetch(`${backendUrl}/list`)
   .then(res => res.json())
