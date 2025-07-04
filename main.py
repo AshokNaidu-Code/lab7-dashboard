@@ -7,7 +7,7 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://lab7-dashboard.vercel.app"],
-    
+
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -26,3 +26,7 @@ else:
 @app.get("/")
 def home():
     return {"message": "✅ Backend is live and running!"}
+
+@app.get("/list")
+def get_list():
+    return { "containers": [] }
