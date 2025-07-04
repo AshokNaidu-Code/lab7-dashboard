@@ -7,7 +7,7 @@
 
 <script>
   const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
-   console.log("🚀 Using backend URL:", backendUrl);
+  console.log("🚀 Using backend URL:", import.meta.env.VITE_BACKEND_URL)
 fetch(`${backendUrl}/list`)
   .then(res => res.json())
   .then(data => {
