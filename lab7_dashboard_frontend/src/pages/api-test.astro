@@ -1,18 +1,77 @@
 ---
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-console.log("Backend URL in .astro:", backendUrl); // forces Vite to embed it
----
-<h1>🔗 Backend Connectivity Check</h1>
-<pre id="response-box">⏳ Contacting /list...</pre>
 
-<script>
-fetch(`${backendUrl}/list`)
-  .then(res => res.json())
-  .then(data => {
-    console.log("✅ Response:", data);
-    document.getElementById("response-box").textContent = JSON.stringify(data, null, 2);
-  })
-  .catch(err => {
-    document.getElementById("response-box").textContent = "❌ Fetch failed: " + err.message;
-  });
-</script>
+if (!backendUrl) {
+  throw new Error("❌ VITE_BACKEND_URL is not defined at build time.");
+}
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Backend Connectivity Test</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 2rem;
+        background-color: #0f172a;
+        color: #e2e8f0;
+      }
+      .card {
+        background-color: #1e293b;
+        padding: 2rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      }
+      pre {
+        background-color: #0f172a;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+      }
+      .loading {
+        color: #38bdf8;
+        font-weight: bold;
+      }
+      .error {
+        color: #f87171;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>🔗 Backend Connectivity Check</h1>
+      <p class="loading">⏳ Contacting <code>/list</code> at <strong>{backendUrl}</strong>...</p>
+      <pre id="response-box">Loading...</pre>
+    </div>
+
+    <script>
+      const backendUrl = "{backendUrl}";
+      console.log("🚀 Using backend URL:", backendUrl);
+
+      fetch(`${backendUrl}/list`)
+        .then(async (res) => {
+          const contentType = res.headers.get("content-type");
+          if (!res.ok) {
+            throw new Error(`Server error: ${res.status}`);
+          }
+          if (contentType && contentType.includes("application/json")) {
+            return res.json();
+          } else {
+            const text = await res.text();
+            throw new Error("Unexpected response: " + text.slice(0, 100));
+          }
+        })
+        .then((data) => {
+          document.querySelector(".loading").textContent = "✅ Response from /list:";
+          document.getElementById("response-box").textContent = JSON.stringify(data, null, 2);
+        })
+        .catch((err) => {
+          document.querySelector(".loading").className = "error";
+          document.querySelector(".loading").textContent = "❌ Fetch failed:";
+          document.getElementById("response-box").textContent = err.message;
+        });
+    </script>
+  </body>
+</html>
