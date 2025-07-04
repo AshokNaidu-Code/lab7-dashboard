@@ -1,9 +1,10 @@
 from fastapi import FastAPI
-from api.trigger import router as trigger_router
+from lab7_dashboard_backend.api.trigger import router as trigger_router
 from fastapi.middleware.cors import CORSMiddleware
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+print("📂 Current files:", os.listdir())
 
 
 app = FastAPI()
