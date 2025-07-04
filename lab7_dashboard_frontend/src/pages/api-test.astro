@@ -1,19 +1,20 @@
 ---
+
 ---
 
 <h1>🔗 Backend Connectivity Check</h1>
 <pre id="response-box">⏳ Contacting /list...</pre>
 
 <script>
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+  const backendUrl =
+    import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
 
   fetch(`${backendUrl}/list`)
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById("response-box").textContent = JSON.stringify(data, null, 2);
+    .then((res) => res.json())
+    .then((data) => {
+      // handle response
     })
-    .catch(err => {
-      document.getElementById("response-box").textContent = "❌ Fetch failed: " + err.message;
+    .catch((err) => {
+      console.error("Fetch failed:", err);
     });
 </script>
-
