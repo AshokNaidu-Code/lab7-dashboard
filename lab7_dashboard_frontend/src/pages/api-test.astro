@@ -4,6 +4,37 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 if (!backendUrl) {
   throw new Error("❌ VITE_BACKEND_URL is not defined at build time.");
 }
+
+// JS to be injected with value inserted at build time
+const script = `
+  document.addEventListener("DOMContentLoaded", () => {
+    const backendUrl = "${backendUrl}";
+    console.log("🚀 Using backend URL:", backendUrl);
+
+    const box = document.getElementById("response-box");
+    const status = document.getElementById("status");
+    if (!box || !status) return;
+
+    fetch(\`\${backendUrl}/list\`)
+      .then(async (res) => {
+        const type = res.headers.get("content-type");
+        if (!res.ok) throw new Error("Server error: " + res.status);
+        if (type && type.includes("application/json")) return res.json();
+        const text = await res.text();
+        throw new Error("Unexpected response: " + text.slice(0, 100));
+      })
+      .then((data) => {
+        status.className = "success";
+        status.textContent = "✅ Response received:";
+        box.textContent = JSON.stringify(data, null, 2);
+      })
+      .catch((err) => {
+        status.className = "error";
+        status.textContent = "❌ Fetch failed:";
+        box.textContent = err.message;
+      });
+  });
+`;
 ---
 
 <html lang="en">
@@ -51,37 +82,6 @@ if (!backendUrl) {
       <pre id="response-box">Loading...</pre>
     </div>
 
-    {
-      // 🧠 This block renders server-side and injects backendUrl correctly
-    }
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const backendUrl = "{backendUrl}";
-        console.log("🚀 Using backend URL:", backendUrl);
-
-        const box = document.getElementById("response-box");
-        const status = document.getElementById("status");
-        if (!box || !status) return;
-
-        fetch(`${backendUrl}/list`)
-          .then(async (res) => {
-            const type = res.headers.get("content-type");
-            if (!res.ok) throw new Error("Server error: " + res.status);
-            if (type && type.includes("application/json")) return res.json();
-            const text = await res.text();
-            throw new Error("Unexpected response: " + text.slice(0, 100));
-          })
-          .then((data) => {
-            status.className = "success";
-            status.textContent = "✅ Response received:";
-            box.textContent = JSON.stringify(data, null, 2);
-          })
-          .catch((err) => {
-            status.className = "error";
-            status.textContent = "❌ Fetch failed:";
-            box.textContent = err.message;
-          });
-      });
-    </script>
+    <script set:html={script} />
   </body>
 </html>
