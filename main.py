@@ -22,8 +22,16 @@ def home():
     return {"message": "✅ Backend is live and running!"}
 
 @app.get("/list")
-def get_list():
-    return list_docker_containers()
+def list_containers():
+    if not shutil.which("docker"):
+        return {
+            "warning": "🚫 Docker CLI not available in this environment.",
+            "containers": [
+                { "id": "abc123", "image": "nginx", "status": "Exited (mock)" },
+                { "id": "def456", "image": "mongo", "status": "Up 5 hours (mock)" }
+            ]
+        }
+
 
 
 # ✅ Logs all loaded routes (visible in Railway logs)
